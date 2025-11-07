@@ -30,9 +30,13 @@ pipeline {
                 }
                 sh '''
                   echo "Building Docker image..."
-                  # Disable Docker credential helper
+                  # Create Docker config without credential helper
+                  mkdir -p /tmp/docker-config
+                  echo '{"credsStore":""}' > /tmp/docker-config/config.json
+                  
+                  export DOCKER_CONFIG="/tmp/docker-config"
                   /usr/local/bin/docker --version
-                  DOCKER_CONFIG="" /usr/local/bin/docker build -t static-image:${BUILD_NUMBER} .
+                  /usr/local/bin/docker build -t static-image:${BUILD_NUMBER} .
                 '''
             }
         }
@@ -47,9 +51,10 @@ pipeline {
                     }
                 }
                 sh '''
-                  DOCKER_CONFIG="" /usr/local/bin/docker stop static-app || true
-                  DOCKER_CONFIG="" /usr/local/bin/docker rm static-app || true
-                  DOCKER_CONFIG="" /usr/local/bin/docker run -d --name static-app -p 8080:80 static-image:${BUILD_NUMBER}
+                  export DOCKER_CONFIG="/tmp/docker-config"
+                  /usr/local/bin/docker stop static-app || true
+                  /usr/local/bin/docker rm static-app || true
+                  /usr/local/bin/docker run -d --name static-app -p 8080:80 static-image:${BUILD_NUMBER}
                   echo "✅ Deployment complete! Access: http://localhost:8080"
                 '''
                 script {
