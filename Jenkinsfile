@@ -2,46 +2,75 @@ pipeline {
     agent any
     
     triggers {
-        pollSCM('* * * * *')  // Poll every minute for changes
+        pollSCM('* * * * *')
     }
     
     stages {
         stage('Clone') {
             steps {
-                slackSend channel: '#your-channel', message: "🚀 STARTED: Pipeline started for commit ${env.GIT_COMMIT}"
-                checkout scm
-                sh 'echo "Repository cloned successfully"'
-                sh 'ls -la'
+                script {
+                    try {
+                        slackSend channel: '#lab_jenkind_l3', message: "🚀 STARTED: Pipeline started"
+                    } catch (Exception e) {
+                        echo "Slack notification failed: ${e.message}"
+                    }
+                }
+                echo "Repository cloned successfully"
             }
         }
         
         stage('Build') {
             steps {
-                slackSend channel: '#your-channel', message: "🔨 BUILD: Building Docker image..."
+                script {
+                    try {
+                        slackSend channel: '#lab_jenkind_l3', message: "🔨 BUILD: Building Docker image..."
+                    } catch (Exception e) {
+                        echo "Slack notification failed: ${e.message}"
+                    }
+                }
                 sh '''
-                  export DOCKER_CONFIG=""
-                  docker build -t static-image:${BUILD_NUMBER} .
-                  docker tag static-image:${BUILD_NUMBER} static-image:latest
+                  echo "Building Docker image..."
+                  /usr/local/bin/docker --version
+                  /usr/local/bin/docker build -t static-image:${BUILD_NUMBER} .
                 '''
             }
         }
         
         stage('Deploy') {
             steps {
-                slackSend channel: '#your-channel', message: "🚀 DEPLOY: Deploying container..."
+                script {
+                    try {
+                        slackSend channel: '#lab_jenkind_l3', message: "🚀 DEPLOY: Deploying container..."
+                    } catch (Exception e) {
+                        echo "Slack notification failed: ${e.message}"
+                    }
+                }
                 sh '''
-                  docker stop static-app || true
-                  docker rm static-app || true
-                  docker run -d --name static-app -p 8080:80 static-image:latest
+                  /usr/local/bin/docker stop static-app || true
+                  /usr/local/bin/docker rm static-app || true
+                  /usr/local/bin/docker run -d --name static-app -p 8080:80 static-image:${BUILD_NUMBER}
+                  echo "✅ Deployment complete! Access: http://localhost:8080"
                 '''
-                slackSend channel: '#your-channel', message: "✅ SUCCESS: Deployment complete! Access at: http://localhost:8080"
+                script {
+                    try {
+                        slackSend channel: '#lab_jenkind_l3', message: "✅ SUCCESS: Deployment complete! Access: http://localhost:8080"
+                    } catch (Exception e) {
+                        echo "Slack notification failed: ${e.message}"
+                    }
+                }
             }
         }
     }
     
     post {
         failure {
-            slackSend channel: '#your-channel', message: "❌ FAILED: Build ${env.BUILD_URL}"
+            script {
+                try {
+                    slackSend channel: '#lab_jenkind_l3', message: "❌ FAILED: Pipeline failed"
+                } catch (Exception e) {
+                    echo "Slack notification failed: ${e.message}"
+                }
+            }
         }
     }
 }
