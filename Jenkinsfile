@@ -54,12 +54,12 @@ pipeline {
                   export DOCKER_CONFIG="/tmp/docker-config"
                   /usr/local/bin/docker stop static-app || true
                   /usr/local/bin/docker rm static-app || true
-                  /usr/local/bin/docker run -d --name static-app -p 8080:80 static-image:${BUILD_NUMBER}
-                  echo "✅ Deployment complete! Access: http://localhost:8080"
+                  /usr/local/bin/docker run -d --name static-app -p 8082:80 static-image:${BUILD_NUMBER}
+                  echo "✅ Deployment complete! Access: http://localhost:8082"
                 '''
                 script {
                     try {
-                        slackSend channel: '#lab_jenkind_l3', message: "✅ SUCCESS: Deployment complete! Access: http://localhost:8080"
+                        slackSend channel: '#lab_jenkind_l3', message: "✅ SUCCESS: Deployment complete! Access: http://localhost:8082"
                     } catch (Exception e) {
                         echo "Slack notification failed: ${e.message}"
                     }
