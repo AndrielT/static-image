@@ -5,6 +5,10 @@ pipeline {
         pollSCM('* * * * *')
     }
     
+    environment {
+        DOCKER_CONFIG = ""
+    }
+    
     stages {
         stage('Clone') {
             steps {
@@ -30,6 +34,7 @@ pipeline {
                 }
                 sh '''
                   echo "Building Docker image..."
+                  export DOCKER_CONFIG=""
                   /usr/local/bin/docker --version
                   /usr/local/bin/docker build -t static-image:${BUILD_NUMBER} .
                 '''
@@ -46,6 +51,7 @@ pipeline {
                     }
                 }
                 sh '''
+                  export DOCKER_CONFIG=""
                   /usr/local/bin/docker stop static-app || true
                   /usr/local/bin/docker rm static-app || true
                   /usr/local/bin/docker run -d --name static-app -p 8080:80 static-image:${BUILD_NUMBER}
@@ -66,7 +72,7 @@ pipeline {
         failure {
             script {
                 try {
-                    slackSend channel: '#lab_jenkind_l3', message: "❌ FAILED: Pipeline failed"
+                    slackSend channel: '#lab_jenkind_l3', message: "❌ FAILED: Pipeline failed - Docker credential issue"
                 } catch (Exception e) {
                     echo "Slack notification failed: ${e.message}"
                 }
