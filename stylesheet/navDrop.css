@@ -1,0 +1,109 @@
+body{
+    border: 0 solid red;
+    margin: 0;
+    background-image: url("/imagess/man_selling.jpeg");
+    background-repeat:no-repeat ;
+    background-size: cover;
+}
+/**/
+#nav > #mainMenu{
+    border: 0 solid blue;
+    margin: 0;
+    list-style-type: none;
+    padding-left: 0;
+    background-color: black;
+    position: fixed;
+    width: 100%;
+}
+#nav>#mainMenu>li{
+    float: left;
+}
+#nav>#mainMenu::after{
+    content: "";
+    display: block;
+    clear: both;
+    height: 1px;
+    background-color: cyan;
+}
+#nav>#mainMenu>li:first-child{
+    color: white;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+      font-size: 16px;
+    padding-right:15px;
+    line-height: 50px;
+    border-right:1px solid gray ;
+    
+}
+#nav>#mainMenu>li>a{
+    text-decoration: none;
+    color: white;
+    display: inline-block;
+    width: 130px;
+    height: 50px;
+    background-color: black;
+    text-align: center;
+    line-height: 50px;
+    border-right: 1px solid gray;
+}
+/*
+STARTING OF THE SUBMENU ALSO CALLED NESTING
+
+we have to add another list into the list in order to create sub-menu list we are
+nesting one another list inside one.
+*/
+#nav > #mainMenu > li > ul.submenu{
+    list-style-type: none;
+    padding-left: 0;
+    height: 0;
+    overflow: hidden;
+    position: absolute; /*remove the background color of the nested ul*/
+    box-shadow: 0px 0px 5px white ; /*show effet verticla and horizontal offset 50x spread */
+}
+#nav > #mainMenu > li >ul.submenu>li>a{
+    text-decoration: none;
+    color: white;
+    display: inline-block;
+    background-color: rgba(0,0,0,0.5);/*using the transparency: rgba*/
+    width: 130px;
+    height: 50px;
+    border-top: 1px solid gray;
+    line-height: 50px;
+    padding: 5px;
+    box-sizing: border-box;
+
+}
+/* the plus (+) symbol is to say if you have a brother a ul.submenu set the brother to this height.
+when i hover over the anchor this anchor   "a" + "ul.submenu " are brother because both have the same 
+parent called list(li)
+ <li>
+          <a href="#">Graphics</a>
+          brothers both inside the li
+          <ul class="submenu">
+            <li><a href="#">PHOTOSHOP</a></li>
+            <li><a href="#">ILLUSTRATOR</a></li>
+            <li><a href="#">INDESING</a></li>
+          </ul>
+        </li>
+there is a problem with this approach
+        #nav > #mainMenu > li > a:hover + ul.submenu {
+height: 150px;
+there will remove the a because whem we hover over we just see but cannot stay.
+
+#nav > #mainMenu > li:hover>  ul.submenu {
+height: 150px;
+}
+}
+ */
+ /* now there is a brother wit≈h is brother */
+#nav > #mainMenu > li:hover> ul.submenu {
+height: 150px;
+}
+#nav>#mainMenu>li>a:hover{
+background-color: orange;
+color: black;
+}
+#nav > #mainMenu > li >ul.submenu>li>a:hover{
+    background-color: orange;
+color: black;
+}
+    
